@@ -33,14 +33,56 @@ const SensorIcon = ({ type }: { type: string }) => {
 };
 
 // Determine status color based on value ranges
-const getStatusColor = (value: number, min: number, max: number) => {
-  if (value < min) return '#F44336'; // Red (Danger)
-  if (value > max) return '#FFC107'; // Yellow (Warning)
-  return '#32CD32'; // Green (Safe)
+const getStatusColor = (value: number, min: number, max: number, sensorName: string) => {
+  if (sensorName === 'Temperature') {
+    if (value >= 25 && value <= 35) {
+      return '#32CD32'; // Green (Normal)
+    } else if ((value >= 20 && value < 25) || (value > 35 && value <= 38)) {
+      return '#FFC107'; // Yellow (Near Normal for Temperature)
+    } else {
+      return '#F44336'; // Red (Far from Normal)
+    }
+  } else if (sensorName === 'pH Level') {
+    if (value >= 5 && value <= 9) {
+      return '#32CD32'; // Green (Normal)
+    } else if ((value >= 4 && value < 5) || (value > 9 && value <= 10)) {
+      return '#FFC107'; // Yellow (Near Normal for pH)
+    } else {
+      return '#F44336'; // Red (Far from Normal)
+    }
+  } else if (sensorName === 'Humidity') {
+    if (value >= 70 && value <= 90) {
+      return '#32CD32'; // Green (Normal)
+    } else if ((value >= 65 && value < 70) || (value > 90 && value <= 95)) {
+      return '#FFC107'; // Yellow (Near Normal for Humidity)
+    } else {
+      return '#F44336'; // Red (Far from Normal)
+    }
+  } else if (sensorName === 'Water Level') {
+    if (value >= 51 && value <= 100) {
+      return '#32CD32'; // Green (Normal)
+    } else if (value >= 26 && value <= 50) {
+      return '#FFC107'; // Yellow (Near Normal for Water Level)
+    } else {
+      return '#F44336'; // Red (Far from Normal)
+    }
+  } else {
+    const rangeMargin = (max - min) * 0.1; // Define margin for near range
+    if (value >= min && value <= max) {
+      if (value >= min + rangeMargin && value <= max - rangeMargin) {
+        return '#32CD32'; // Green (Normal)
+      } else {
+        return '#FFC107'; // Yellow (Near Normal)
+      }
+    } else {
+      return '#F44336'; // Red (Far from Normal)
+    }
+  }
 };
 
 const EnhancedMonitoringDashboard = () => {
   const [sensorsData, setSensorsData] = useState<Sensor[]>([]);
+  const [lastFetched, setLastFetched] = useState<string>('');
 
   useEffect(() => {
     const dataRef = ref(database, 'irrigationSystemLogs');
@@ -65,24 +107,24 @@ const EnhancedMonitoringDashboard = () => {
               value: getLatestValue(data.temperature),
               unit: '°C',
               min: 20,
-              max: 35,
-              normalRange: '20-30 °C',
+              max: 40,
+              normalRange: '25-35 °C',
             },
             {
               name: 'Humidity',
               value: getLatestValue(data.humidity),
               unit: '%',
               min: 50,
-              max: 90,
-              normalRange: '60-80 %',
+              max: 100,
+              normalRange: '70-90 %',
             },
             {
               name: 'pH Level',
               value: getLatestValue(data.pH),
               unit: 'pH',
-              min: 4,
-              max: 8,
-              normalRange: '6.0-7.0 pH',
+              min: 0,
+              max: 14,
+              normalRange: '5.0-9.0 pH',
             },
             {
               name: 'Water Level',
@@ -94,6 +136,8 @@ const EnhancedMonitoringDashboard = () => {
           ];
 
           setSensorsData(formattedData);
+          const currentTimestamp = new Date().toLocaleString();
+          setLastFetched(currentTimestamp);
         }
       },
       (error) => {
@@ -116,7 +160,7 @@ const EnhancedMonitoringDashboard = () => {
         {sensorsData.length > 0 ? (
           <View style={styles.rowContainer}>
             {sensorsData.map((sensor, index) => {
-              const statusColor = getStatusColor(sensor.value, sensor.min, sensor.max);
+              const statusColor = getStatusColor(sensor.value, sensor.min, sensor.max, sensor.name);
 
               return (
                 <View key={index} style={styles.sensorCard}>
@@ -138,11 +182,12 @@ const EnhancedMonitoringDashboard = () => {
                     style={styles.progressBar}
                   />
                   {sensor.normalRange && (
-                    <Text style={styles.normalRange}>Normal: {sensor.normalRange}</Text>
+                    <Text style={styles.normalRange}>Optimum: {sensor.normalRange}</Text>
                   )}
                 </View>
               );
             })}
+            <Text style={styles.fetchedText}>Fetched on: {lastFetched}</Text>
           </View>
         ) : (
           <Text style={styles.loadingText}>Loading data...</Text>
@@ -210,6 +255,12 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     textAlign: 'center',
     marginTop: 50,
+  },
+  fetchedText: {
+    fontSize: 16,
+    color: '#FFFFFF',
+    marginTop: 10,
+    textAlign: 'center',
   },
 });
 

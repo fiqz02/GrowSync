@@ -20,6 +20,14 @@ const GraphWithDropdown = () => {
         { label: 'Humidity', value: 'humidity' },
     ]);
 
+    const resetDataIfNewDay = (newDate: string) => {
+        if (analysis.date && analysis.date !== newDate) {
+            setGraphData([]);
+            setTimestamps([]);
+            setAnalysis({ highest: 0, lowest: 0, average: 0, date: newDate });
+        }
+    };
+
     useEffect(() => {
         const dataRef = ref(database, `irrigationSystemLogs/${selectedParameter}`);
 
@@ -50,6 +58,8 @@ const GraphWithDropdown = () => {
 
                     // Extract date from the first entry
                     const date = entries[0][0].split('_')[0];
+
+                    resetDataIfNewDay(date);
 
                     setGraphData(averages);
                     setTimestamps(timeLabels);
