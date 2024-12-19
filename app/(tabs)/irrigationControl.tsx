@@ -139,10 +139,7 @@ const EnhancedIrrigationControl = () => {
 
       <Text style={styles.remainingTime}>Remaining Time</Text>
 
-      <Text style={styles.selectedAngle}>
-        Selected Valve Angle: {selectedAngle}° </Text>
-
-      <Text style={styles.subtitle}>Select Water Valve Angle:</Text>
+      <Text style={styles.subtitle}>Set Water Valve Angle:</Text>
       <View style={styles.angleGrid}>
         {[45, 90, 135, 180].map((angle) => (
           <TouchableOpacity
@@ -165,9 +162,16 @@ const EnhancedIrrigationControl = () => {
         ))}
       </View>
 
-      <Text style={styles.subtitle}>Set the timer:</Text>
+      <Text style={styles.subtitle}>Set timer:</Text>
       <View style={styles.timerContainer}>
-        {[10, 20, 30].map((value) => (
+        {[
+          { value: 10, label: '10 min' },
+          { value: 20, label: '20 min' },
+          { value: 30, label: '30 min' },
+          { value: 60, label: '1 hour' },
+          { value: 90, label: '1.5 hours' },
+          { value: 120, label: '2 hours' },
+        ].map(({ value, label }) => (
           <TouchableOpacity
             key={value}
             style={[
@@ -182,7 +186,7 @@ const EnhancedIrrigationControl = () => {
                 timer === value.toString() ? styles.selectedTimerButtonText : null,
               ]}
             >
-              {value}min
+              {label}
             </Text>
           </TouchableOpacity>
         ))}
@@ -267,17 +271,10 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     marginBottom: 30,
   },
-  selectedAngle: {
-    fontSize: 24,
-    fontWeight: '600',
-    color: '#FFFFFF',
-    marginBottom: 10,
-    textAlign: 'center',
-  },
   subtitle: {
-    fontSize: 20,
+    fontSize: 25,
     color: '#FFFFFF',
-    marginBottom: 10,
+    marginBottom: 5,
     textAlign: 'center',
   },
   angleGrid: {
@@ -307,17 +304,21 @@ const styles = StyleSheet.create({
   },
   timerContainer: {
     flexDirection: 'row',
+    flexWrap: 'wrap',
     alignItems: 'center',
-    justifyContent: 'space-between',
+    justifyContent: 'center', // Center align all items including TextInput
     width: '100%',
-    marginBottom: 20,
+    gap: 5,
+    
   },
   timerButton: {
     backgroundColor: 'rgba(255, 255, 255, 0.2)',
     padding: 15,
     borderRadius: 8,
-    width: '22%',
+    width: '30%',
+    height: '25%',
     alignItems: 'center',
+    marginVertical: 5,
   },
   selectedTimerButton: {
     backgroundColor: '#00008b',
@@ -334,9 +335,11 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255, 255, 255, 0.2)',
     borderRadius: 8,
     padding: 10,
-    width: '22%',
+    width: '30%',
     textAlign: 'center',
     color: '#FFFFFF',
+    marginVertical: 10,
+    alignSelf: 'center', // Ensures the input is centered within its parent container
   },
   buttonContainer: {
     flexDirection: 'row',
@@ -348,10 +351,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    padding: 15,
+    padding: 20,
     borderRadius: 8,
     width: '45%',
-    marginTop: 35,
   },
   startButton: {
     backgroundColor: '#32CD32',

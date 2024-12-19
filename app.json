@@ -11,15 +11,15 @@
     "splash": {
       "image": "./assets/images/GrowSync.png",
       "resizeMode": "contain",
-      "backgroundColor": "#4682B4"
+      "backgroundColor": "#FFFFFF"
     },
     "ios": {
       "supportsTablet": true
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/adaptive-icon.png",
-        "backgroundColor": "#4682B4"
+        "foregroundImage": "./assets/images/GrowSync.png",
+        "backgroundColor": "#FFFFFF"
       },
       "package": "com.pitzz.GrowSync"
     },
