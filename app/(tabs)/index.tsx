@@ -66,18 +66,7 @@ const getStatusColor = (value: number, min: number, max: number, sensorName: str
     } else {
       return '#F44336'; // Red (Far from Normal)
     }
-  } else {
-    const rangeMargin = (max - min) * 0.1; // Define margin for near range
-    if (value >= min && value <= max) {
-      if (value >= min + rangeMargin && value <= max - rangeMargin) {
-        return '#32CD32'; // Green (Normal)
-      } else {
-        return '#FFC107'; // Yellow (Near Normal)
-      }
-    } else {
-      return '#F44336'; // Red (Far from Normal)
-    }
-  }
+  } 
 };
 
 const EnhancedMonitoringDashboard = () => {
@@ -85,8 +74,8 @@ const EnhancedMonitoringDashboard = () => {
   const [lastFetched, setLastFetched] = useState<string>('');
 
   useEffect(() => {
+    // Firebase listener
     const dataRef = ref(database, 'irrigationSystemLogs');
-
     const listener = onValue(
       dataRef,
       (snapshot) => {

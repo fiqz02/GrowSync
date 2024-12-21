@@ -1,23 +1,19 @@
 import messaging from '@react-native-firebase/messaging';
 
-export async function requestFCMPermission(): Promise<void> {
+export const requestFCMPermission = async () => {
   const authStatus = await messaging().requestPermission();
   const enabled =
     authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
     authStatus === messaging.AuthorizationStatus.PROVISIONAL;
 
   if (enabled) {
-    console.log('Notification permissions granted.');
+    console.log('Authorization status:', authStatus);
   } else {
-    console.log('Notification permissions not granted.');
+    throw new Error('FCM permission not granted');
   }
-}
+};
 
-export async function subscribeToTopic(topic: string): Promise<void> {
-  try {
-    await messaging().subscribeToTopic(topic);
-    console.log(`Subscribed to topic: ${topic}`);
-  } catch (error) {
-    console.error(`Failed to subscribe to topic: ${topic}`, error);
-  }
-}
+export const subscribeToTopic = async (topic: string) => {
+  await messaging().subscribeToTopic(topic);
+  console.log(`Subscribed to topic: ${topic}`);
+};
