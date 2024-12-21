@@ -4,7 +4,7 @@ import DropDownPicker from "react-native-dropdown-picker";
 import { LineChart } from "react-native-chart-kit";
 import { Dimensions } from "react-native";
 import { ref, onValue } from "firebase/database";
-import { database } from "../firebase.config";
+import { database } from "../../firebase.config";
 import { LinearGradient } from "expo-linear-gradient";
 
 const screenWidth = Dimensions.get("window").width;
