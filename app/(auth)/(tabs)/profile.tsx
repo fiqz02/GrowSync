@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React from "react";
 import { View, Text, Button, StyleSheet } from "react-native";
 import { auth } from "../../firebase.config";
 import { signOut } from "firebase/auth";

@@ -11,6 +11,7 @@ import { auth } from "../firebase.config";
 import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
+  sendPasswordResetEmail,
 } from "firebase/auth";
 
 export default function Authentication() {
@@ -133,12 +134,12 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     paddingHorizontal: 20,
-    backgroundColor: "#f9f9f9",
+    backgroundColor: "#87cefa", // Light blue background
   },
   title: {
     fontSize: 28,
-    fontWeight: "bold",
-    color: "#333",
+    fontWeight: "600",
+    color: "#00008b", // Dark blue for the title
     marginBottom: 20,
     textAlign: "center",
   },
@@ -148,13 +149,13 @@ const styles = StyleSheet.create({
   },
   input: {
     borderWidth: 1,
-    borderColor: "#ccc",
+    borderColor: "#00008b", // Blue border
     borderRadius: 8,
     padding: 12,
     paddingRight: 50, // Space for 'Show' button
     fontSize: 16,
-    backgroundColor: "#fff",
-    color: "#333",
+    backgroundColor: "#ffffff", // White background
+    color: "#00008b", // Dark blue text
   },
   showPasswordToggle: {
     position: "absolute",
@@ -163,22 +164,22 @@ const styles = StyleSheet.create({
   },
   showPasswordText: {
     fontSize: 16,
-    color: "#007bff",
+    color: "#00008b", // Bright blue for show/hide text
   },
   button: {
-    backgroundColor: "#007bff",
+    backgroundColor: "#00008b", // Bright blue background
     paddingVertical: 15,
     borderRadius: 8,
     alignItems: "center",
     marginTop: 10,
   },
   buttonText: {
-    color: "#fff",
+    color: "#ffffff", // White text
     fontSize: 18,
     fontWeight: "bold",
   },
   error: {
-    color: "red",
+    color: "#ef4444", // Red color for error messages
     marginBottom: 10,
     textAlign: "center",
   },
@@ -187,7 +188,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   switchText: {
-    color: "#007bff",
+    color: "#00008b", // Bright blue for switch text
     textDecorationLine: "underline",
     fontSize: 16,
   },
