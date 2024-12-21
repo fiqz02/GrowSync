@@ -2,10 +2,11 @@ import React, { useState } from "react";
 import {
   View,
   TextInput,
-  Button,
+  TouchableOpacity,
   Text,
   StyleSheet,
-  TouchableOpacity,
+  Alert,
+  ActivityIndicator, Image
 } from "react-native";
 import { auth } from "../firebase.config";
 import {
@@ -18,48 +19,79 @@ export default function Authentication() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [error, setError] = useState("");
   const [isRegistering, setIsRegistering] = useState(false);
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-  const handleLogin = async () => {
+  const validateEmail = (email: string) => /\S+@\S+\.\S+/.test(email);
+
+  const handleAuthAction = async () => {
+    if (!validateEmail(email)) {
+      setError("Please enter a valid email address.");
+      return;
+    }
+
+    if (password.length < 6) {
+      setError("Password must be at least 6 characters long.");
+      return;
+    }
+
+    if (isRegistering && password !== confirmPassword) {
+      setError("Passwords do not match.");
+      return;
+    }
+
+    setLoading(true);
+    setError("");
+
     try {
-      await signInWithEmailAndPassword(auth, email, password);
-      console.log("Login successful");
+      if (isRegistering) {
+        await createUserWithEmailAndPassword(auth, email, password);
+        Alert.alert("Success", "Registration successful.");
+      } else {
+        await signInWithEmailAndPassword(auth, email, password);
+        Alert.alert("Success", "Login successful.");
+      }
     } catch (err: any) {
-      setError(err.message);
+      setError(err.message || "An error occurred. Please try again.");
+    } finally {
+      setLoading(false);
     }
   };
 
-  const handleRegister = async () => {
-    if (password !== confirmPassword) {
-      setError("Passwords do not match");
+  const handlePasswordReset = async () => {
+    if (!validateEmail(email)) {
+      setError("Please enter a valid email to reset the password.");
       return;
     }
 
     try {
-      await createUserWithEmailAndPassword(auth, email, password);
-      console.log("Registration successful");
+      await sendPasswordResetEmail(auth, email);
+      Alert.alert("Success", "Password reset email sent.");
     } catch (err: any) {
-      setError(err.message);
+      setError(err.message || "Failed to send reset email. Please try again.");
     }
   };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>{isRegistering ? "Register" : "Login"}</Text>
+      <Image
+        source={require("../../assets/images/GrowSync.png")}
+        style={styles.logo}
+        resizeMode="contain"
+      />
 
-      <View style={styles.inputContainer}>
-        <TextInput
-          style={styles.input}
-          placeholder="Email"
-          value={email}
-          onChangeText={setEmail}
-          keyboardType="email-address"
-          autoCapitalize="none"
-          placeholderTextColor="#666"
-        />
-      </View>
+      <TextInput
+        style={styles.input}
+        placeholder="Email"
+        value={email}
+        onChangeText={setEmail}
+        keyboardType="email-address"
+        autoCapitalize="none"
+        placeholderTextColor="#666"
+      />
 
       <View style={styles.inputContainer}>
         <TextInput
@@ -87,15 +119,15 @@ export default function Authentication() {
             placeholder="Confirm Password"
             value={confirmPassword}
             onChangeText={setConfirmPassword}
-            secureTextEntry={!showPassword}
+            secureTextEntry={!showConfirmPassword}
             placeholderTextColor="#666"
           />
           <TouchableOpacity
-            onPress={() => setShowPassword(!showPassword)}
+            onPress={() => setShowConfirmPassword(!showConfirmPassword)}
             style={styles.showPasswordToggle}
           >
             <Text style={styles.showPasswordText}>
-              {showPassword ? "Hide" : "Show"}
+              {showConfirmPassword ? "Hide" : "Show"}
             </Text>
           </TouchableOpacity>
         </View>
@@ -103,28 +135,36 @@ export default function Authentication() {
 
       {error ? <Text style={styles.error}>{error}</Text> : null}
 
-      <TouchableOpacity
-        style={styles.button}
-        onPress={isRegistering ? handleRegister : handleLogin}
-      >
-        <Text style={styles.buttonText}>
-          {isRegistering ? "Register" : "Login"}
-        </Text>
-      </TouchableOpacity>
+      {loading ? (
+        <ActivityIndicator size="large" color="#00008b" />
+      ) : (
+        <>
+          <TouchableOpacity style={styles.button} onPress={handleAuthAction}>
+            <Text style={styles.buttonText}>
+              {isRegistering ? "Register" : "Login"}
+            </Text>
+          </TouchableOpacity>
 
-      <TouchableOpacity
-        onPress={() => {
-          setIsRegistering(!isRegistering);
-          setError("");
-        }}
-        style={styles.switchButton}
-      >
-        <Text style={styles.switchText}>
-          {isRegistering
-            ? "Already have an account? Login"
-            : "Don't have an account? Register"}
-        </Text>
-      </TouchableOpacity>
+          {!isRegistering && (
+            <TouchableOpacity onPress={handlePasswordReset}>
+              <View style={styles.forgotPasswordContainer}>
+                <Text style={styles.forgotPassword}>Forgot Password?</Text>
+              </View>
+            </TouchableOpacity>
+          )}
+
+          <TouchableOpacity
+            onPress={() => setIsRegistering(!isRegistering)}
+            style={styles.switchButton}
+          >
+            <Text style={styles.switchText}>
+              {isRegistering
+                ? "Already have an account? Login"
+                : "Don't have an account? Register"}
+            </Text>
+          </TouchableOpacity>
+        </>
+      )}
     </View>
   );
 }
@@ -136,16 +176,15 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     backgroundColor: "#87cefa", // Light blue background
   },
-  title: {
-    fontSize: 28,
-    fontWeight: "600",
-    color: "#00008b", // Dark blue for the title
+  logo: {
+    width: 150, // Adjust the width as needed
+    height: 150, // Adjust the height as needed
+    alignSelf: "center", // Center the logo
     marginBottom: 20,
-    textAlign: "center",
   },
   inputContainer: {
     marginBottom: 15,
-    position: "relative",
+    position: "fixed",
   },
   input: {
     borderWidth: 1,
@@ -156,22 +195,33 @@ const styles = StyleSheet.create({
     fontSize: 16,
     backgroundColor: "#ffffff", // White background
     color: "#00008b", // Dark blue text
+    marginBottom: 10,
   },
   showPasswordToggle: {
     position: "absolute",
     right: 10,
-    top: 12,
+    top: 13, // Align with text input
   },
   showPasswordText: {
     fontSize: 16,
     color: "#00008b", // Bright blue for show/hide text
+  },
+  forgotPasswordContainer: {
+    width: "100%",
+    alignItems: "center",
+    marginTop: 10,
+  },
+  forgotPassword: {
+    color: "#00008b", // Blue color
+    textDecorationLine: "underline",
+    fontSize: 16,
   },
   button: {
     backgroundColor: "#00008b", // Bright blue background
     paddingVertical: 15,
     borderRadius: 8,
     alignItems: "center",
-    marginTop: 10,
+    marginTop: 1,
   },
   buttonText: {
     color: "#ffffff", // White text
@@ -184,7 +234,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   switchButton: {
-    marginTop: 15,
+    marginTop: 10,
     alignItems: "center",
   },
   switchText: {
