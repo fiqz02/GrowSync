@@ -10,12 +10,13 @@ import {
   Image,
 } from "react-native";
 import { useRouter } from "expo-router";
-import { auth } from "../firebase.config";
+import { auth, database } from "../firebase.config";
 import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
   sendPasswordResetEmail,
 } from "firebase/auth";
+import { ref, set } from "firebase/database";
 
 export default function Authentication() {
   const router = useRouter(); // Initialize the router
@@ -51,14 +52,28 @@ export default function Authentication() {
 
     try {
       if (isRegistering) {
-        await createUserWithEmailAndPassword(auth, email, password);
+        // Create user and write role to database
+        const userCredential = await createUserWithEmailAndPassword(
+          auth,
+          email,
+          password
+        );
+        const uid = userCredential.user.uid;
+
+        // Assign "user" role by default
+        const userRef = ref(database, `users/${uid}`);
+        await set(userRef, {
+          email: email,
+          role: "user", // Default role is "user". Change if necessary
+        });
+
         Alert.alert("Success", "Registration successful.");
       } else {
         await signInWithEmailAndPassword(auth, email, password);
         Alert.alert("Success", "Login successful.");
       }
 
-      router.replace("/(auth)/(tabs)");
+      router.replace("/(auth)/(tabs)"); // Redirect after success
     } catch (err: any) {
       setError(err.message || "An error occurred. Please try again.");
     } finally {
