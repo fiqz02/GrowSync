@@ -1,8 +1,26 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Tabs } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
+import { Alert } from "react-native";
+import { AuthContext } from "../../_layout"; // Adjust the path based on your file structure
 
 export default function TabLayout() {
+  const { role } = useContext(AuthContext);
+
+  if (!role) {
+    return null; // Or show a fallback UI until the role is determined
+  }
+
+  const checkAccess = (allowedRoles: string[], e: any) => {
+    if (!allowedRoles.includes(role)) {
+      e.preventDefault();
+      Alert.alert(
+        "Access Denied",
+        "You do not have permission to access this page."
+      );
+    }
+  };
+
   return (
     <Tabs
       screenOptions={{
@@ -34,6 +52,9 @@ export default function TabLayout() {
             />
           ),
         }}
+        listeners={({ navigation }) => ({
+          tabPress: (e) => checkAccess(["admin", "user"], e),
+        })}
       />
       <Tabs.Screen
         name="irrigationControl"
@@ -56,6 +77,9 @@ export default function TabLayout() {
             />
           ),
         }}
+        listeners={({ navigation }) => ({
+          tabPress: (e) => checkAccess(["admin"], e),
+        })}
       />
       <Tabs.Screen
         name="graph"
@@ -74,6 +98,9 @@ export default function TabLayout() {
             <Ionicons name="stats-chart" size={24} color={color} />
           ),
         }}
+        listeners={({ navigation }) => ({
+          tabPress: (e) => checkAccess(["admin", "user"], e),
+        })}
       />
       <Tabs.Screen
         name="setting"
@@ -92,6 +119,9 @@ export default function TabLayout() {
             <Ionicons name="settings" size={size} color={color} />
           ),
         }}
+        listeners={({ navigation }) => ({
+          tabPress: (e) => checkAccess(["admin", "user"], e),
+        })}
       />
     </Tabs>
   );

@@ -1,10 +1,22 @@
 import React, { useContext, useEffect, useState } from "react";
-import { DarkTheme, DefaultTheme, ThemeProvider,} from "@react-navigation/native";
+import {
+  DarkTheme,
+  DefaultTheme,
+  ThemeProvider,
+} from "@react-navigation/native";
 import { Slot, useRouter } from "expo-router";
 import { useColorScheme } from "@/components/useColorScheme";
 import { auth } from "./firebase.config";
+import { ref, get } from "firebase/database";
+import { database } from "./firebase.config";
 import { User } from "firebase/auth";
 import { Text, View } from "react-native";
+
+// Exporting AuthContext for use in other components like TabLayout
+export const AuthContext = React.createContext<{
+  user: User | null;
+  role: string | null;
+}>({ user: null, role: null });
 
 export default function RootLayout() {
   return (
@@ -14,20 +26,31 @@ export default function RootLayout() {
   );
 }
 
-// Context for authentication
-const AuthContext = React.createContext<{ user: User | null }>({ user: null });
-
 function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
+  const [role, setRole] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged((currentUser) => {
-      setUser(currentUser);
+    const unsubscribe = auth.onAuthStateChanged(async (currentUser) => {
+      if (currentUser) {
+        setUser(currentUser);
+        try {
+          const roleRef = ref(database, `users/${currentUser.uid}/role`);
+          const roleSnapshot = await get(roleRef);
+          setRole(roleSnapshot.exists() ? roleSnapshot.val() : "user");
+        } catch (error) {
+          console.error("Error fetching user role:", error);
+          setRole("user"); // Default to "user" if error occurs
+        }
+      } else {
+        setUser(null);
+        setRole(null);
+      }
       setLoading(false);
     });
 
-    return unsubscribe; // Cleanup on unmount
+    return unsubscribe;
   }, []);
 
   if (loading) {
@@ -35,7 +58,9 @@ function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <AuthContext.Provider value={{ user }}>{children}</AuthContext.Provider>
+    <AuthContext.Provider value={{ user, role }}>
+      {children}
+    </AuthContext.Provider>
   );
 }
 
@@ -55,8 +80,6 @@ function RootLayoutNav() {
   useEffect(() => {
     if (!user) {
       router.replace("/(auth)/authentication"); // Redirect to login
-    } else {
-      router.replace("/(auth)/(tabs)"); // Redirect authenticated users to tabs
     }
   }, [user]);
 
