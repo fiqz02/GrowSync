@@ -1,6 +1,6 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { Tabs } from "expo-router";
-import { Ionicons } from "@expo/vector-icons"; // Import Ionicons for icons
+import { Ionicons } from "@expo/vector-icons";
 
 export default function TabLayout() {
   return (
@@ -9,7 +9,7 @@ export default function TabLayout() {
         tabBarStyle: {
           backgroundColor: "#FFFFFF",
         },
-        tabBarActiveTintColor: "#00008b", // Selected tab color
+        tabBarActiveTintColor: "#00008b",
         headerShown: true,
       }}
     >
@@ -19,16 +19,16 @@ export default function TabLayout() {
           title: "Dashboard",
           headerTitle: "GrowSync",
           headerStyle: {
-            backgroundColor: "#00008b", // Header background color
+            backgroundColor: "#00008b",
           },
-          headerTintColor: "#ffffff", // Header text color
+          headerTintColor: "#ffffff",
           headerTitleStyle: {
             fontSize: 24,
             fontWeight: "700",
           },
           tabBarIcon: ({ color, focused }) => (
             <Ionicons
-              name={focused ? "home" : "home-outline"} // Use Ionicons for icons
+              name={focused ? "home" : "home-outline"}
               size={24}
               color={color}
             />
@@ -41,16 +41,16 @@ export default function TabLayout() {
           title: "Irrigation Control",
           headerTitle: "GrowSync",
           headerStyle: {
-            backgroundColor: "#00008b", // Header background color
+            backgroundColor: "#00008b",
           },
-          headerTintColor: "#ffffff", // Header text color
+          headerTintColor: "#ffffff",
           headerTitleStyle: {
             fontSize: 24,
             fontWeight: "700",
           },
           tabBarIcon: ({ color, focused }) => (
             <Ionicons
-              name={focused ? "water" : "water-outline"} // Use Ionicons for icons
+              name={focused ? "water" : "water-outline"}
               size={24}
               color={color}
             />
@@ -80,6 +80,9 @@ export default function TabLayout() {
         options={{
           title: "Setting",
           headerTitle: "Profile",
+          headerStyle: {
+            backgroundColor: "#00008b",
+          },
           headerTintColor: "#ffffff",
           headerTitleStyle: {
             fontSize: 24,
