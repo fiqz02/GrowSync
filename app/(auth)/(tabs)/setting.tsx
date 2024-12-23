@@ -4,8 +4,8 @@ import * as ImagePicker from "expo-image-picker";
 import { auth } from "../../firebase.config";
 import { signOut } from "firebase/auth";
 import { useRouter } from "expo-router";
-import { MaterialIcons } from "@expo/vector-icons"; // Import Material Icons
-import { LinearGradient } from "expo-linear-gradient"; // Import LinearGradient for background
+import { MaterialIcons } from "@expo/vector-icons"; 
+import { LinearGradient } from "expo-linear-gradient";
 
 export default function Profile() {
   const [profilePhoto, setProfilePhoto] = useState<string | null>(null); // Allow null or string for state

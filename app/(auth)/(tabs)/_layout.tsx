@@ -1,14 +1,18 @@
 import React, { useContext } from "react";
 import { Tabs } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
-import { Alert } from "react-native";
-import { AuthContext } from "../../_layout"; // Adjust the path based on your file structure
+import { View, Alert, ActivityIndicator } from "react-native";
+import { AuthContext } from "../../_layout";
 
 export default function TabLayout() {
   const { role } = useContext(AuthContext);
 
   if (!role) {
-    return null; // Or show a fallback UI until the role is determined
+    return (
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <ActivityIndicator size="large" color="#00008b" />
+      </View>
+    );
   }
 
   const checkAccess = (allowedRoles: string[], e: any) => {

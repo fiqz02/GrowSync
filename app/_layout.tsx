@@ -1,12 +1,19 @@
 import React, { useContext, useEffect, useState } from "react";
-import { DarkTheme, DefaultTheme, ThemeProvider,} from "@react-navigation/native";
+import {
+  DarkTheme,
+  DefaultTheme,
+  ThemeProvider,
+} from "@react-navigation/native";
 import { Slot, useRouter } from "expo-router";
 import { useColorScheme } from "@/components/useColorScheme";
 import { auth } from "./firebase.config";
 import { ref, get } from "firebase/database";
 import { database } from "./firebase.config";
 import { User } from "firebase/auth";
-import { Text, View } from "react-native";
+import { Text, View, Alert } from "react-native";
+
+// Import FCM utilities
+import { initializeFCM, subscribeToFCMTopic } from "../utils/fcmService";
 
 // Exporting AuthContext for use in other components like TabLayout
 export const AuthContext = React.createContext<{
@@ -73,9 +80,27 @@ function RootLayoutNav() {
   const { user } = useContext(AuthContext);
   const router = useRouter();
 
+  // Initialize FCM
+  useEffect(() => {
+    const setupFCM = async () => {
+      try {
+        await initializeFCM(); // Initialize FCM for permissions and notifications
+        await subscribeToFCMTopic("sensor-alerts"); // Subscribe to topic for sensor alerts
+      } catch (error) {
+        console.error("Error setting up FCM:", error);
+      }
+    };
+
+    if (user) {
+      setupFCM();
+    }
+  }, [user]);
+
   useEffect(() => {
     if (!user) {
       router.replace("/(auth)/authentication"); // Redirect to login
+    } else {
+      router.replace("/(auth)/(tabs)");
     }
   }, [user]);
 
