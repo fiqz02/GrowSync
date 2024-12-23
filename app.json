@@ -4,12 +4,12 @@
     "slug": "GrowSync",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/GrowSync.png",
+    "icon": "./assets/images/logoGS(1).png",
     "scheme": "myapp",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "splash": {
-      "image": "./assets/images/GrowSync.png",
+      "image": "./assets/images/logoGS(2).png",
       "resizeMode": "contain",
       "backgroundColor": "#FFFFFF"
     },

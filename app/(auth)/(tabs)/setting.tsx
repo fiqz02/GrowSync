@@ -1,12 +1,5 @@
 import React, { useState } from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  Image,
-  Alert,
-} from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, Image, Alert,} from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import { auth } from "../../firebase.config";
 import { signOut } from "firebase/auth";

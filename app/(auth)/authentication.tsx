@@ -99,7 +99,7 @@ export default function Authentication() {
     <View style={styles.container}>
       {/* Logo at the top */}
       <Image
-        source={require("../../assets/images/GrowSync.png")} // Update the path to your logo file
+        source={require("../../assets/images/logoGS(1).png")} // Update the path to your logo file
         style={styles.logo}
         resizeMode="contain"
       />
@@ -199,8 +199,8 @@ const styles = StyleSheet.create({
     backgroundColor: "#87cefa",
   },
   logo: {
-    width: 150,
-    height: 150,
+    width: 250,
+    height: 200,
     alignSelf: "center",
     marginBottom: 20,
   },

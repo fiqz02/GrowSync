@@ -1,9 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
-import {
-  DarkTheme,
-  DefaultTheme,
-  ThemeProvider,
-} from "@react-navigation/native";
+import { DarkTheme, DefaultTheme, ThemeProvider,} from "@react-navigation/native";
 import { Slot, useRouter } from "expo-router";
 import { useColorScheme } from "@/components/useColorScheme";
 import { auth } from "./firebase.config";
